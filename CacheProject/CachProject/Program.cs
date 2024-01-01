@@ -11,7 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<ICache, CacheService>();
-builder.Services.Configure<CacheSettings>(builder.Configuration.GetSection("MemoryCachingSettings"));
+builder.Services.Configure<CacheSettings>(builder.Configuration.GetSection("CacheSettings"));
 
 var app = builder.Build();
 
