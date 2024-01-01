@@ -25,25 +25,24 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-
-app.MapGet("/SearchNames", async (string str, ICache _ICash) =>
+app.MapGet("/SearchByCategory", async (int category, ICache _ICash) =>
 {
-    return await _ICash.GetOrCreateAsync($"CachedName{str}", Helper.SearchNames, str);
-
+    return await _ICash.GetOrCreateAsync($"CachedCategory{category}", Helper.Search, category);
+});
+app.MapGet("/SearchByType", async (string type, ICache _ICash) =>
+{
+    return await _ICash.GetOrCreateAsync($"CachedType{type}",/* async id => await */Helper.Search/*(type)*/, type);
 });
 
-app.MapGet("/SearchIds", async (int id, ICache _ICash) =>
+app.MapGet("/Test",  (ICache _ICash) =>
 {
-    return await _ICash.GetOrCreateAsync($"CachedId{id}", Helper.SearchIds, id);
-});
-
-app.MapGet("/SearchIdsGeneric", async (int id, ICache _ICash) =>
-{
-    return  await _ICash.GetOrCreateWithGenericAsync($"CachedId{id}", async id => await Helper.SearchIds(id), id);
-});
-app.MapGet("/SearchNamesGeneric", async (string str, ICache _ICash) =>
-{
-    return await _ICash.GetOrCreateWithGenericAsync($"CachedId{str}", async id => await Helper.SearchNames(str), str);
+    List<int> items = new();
+    Parallel.ForEach(Enumerable.Range(1, 10),
+         async i =>
+        {
+            var item = await _ICash.GetOrCreateAsync("KEY", (x) => Task.FromResult(x), i);
+            Console.Write($"{item} ");
+        });
 });
 
 app.Run();
